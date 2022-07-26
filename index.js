@@ -3,13 +3,13 @@ const size = 10;
 const fps = 40;
 
 const hider = {
-  x: 2,
-  y: 2,
+  x: 0,
+  y: 9,
 };
 
 const seeker = {
-  x: 5,
-  y: 7,
+  x: 9,
+  y: 0,
 };
 
 const tempSeeker = {
@@ -26,11 +26,13 @@ let path = [];
 
 let { x: er, y: ec } = hider;
 
-const visited = new Set();
-const queue = [[seeker.x, seeker.y]];
-const pathDict = {};
+let visited = new Set();
+let queue = [[seeker.x, seeker.y]];
+let pathDict = {};
 
 let pathFinding = false;
+
+let updatedHider = false;
 
 document.addEventListener("DOMContentLoaded", () => {
   squares = makeGrid();
@@ -49,6 +51,13 @@ function main(currentTime) {
 }
 
 function update() {
+  if (updatedHider) {
+    visited = new Set();
+    queue = [[seeker.x, seeker.y]];
+    pathDict = {};
+    updatedHider = false;
+  }
+
   if (queue.length > 0) {
     let pos = queue.shift();
     let [row, col] = pos;
@@ -60,19 +69,19 @@ function update() {
     tempSeeker.x = row;
     tempSeeker.y = col;
 
-    if (pos.join() === [er, ec].join()) {
+    if (pos.join() === [hider.x, hider.y].join()) {
       console.log("HRJEKHRJEKRE");
       path = getPath(pathDict, pos, [seeker.x, seeker.y]);
       queue.length = 0;
       return;
     }
 
-    if (row != er) {
+    if (row != hider.x) {
       queue.push([row + 1, col]);
       queue.push([row - 1, col]);
     }
 
-    if (col != ec) {
+    if (col != hider.y) {
       queue.push([row, col + 1]);
       queue.push([row, col - 1]);
     }
@@ -91,6 +100,8 @@ function update() {
     tempSeeker.x = path[0][0];
     tempSeeker.y = path[0][1];
     path.shift();
+  } else {
+    pathFinding = false;
   }
 }
 
@@ -120,6 +131,48 @@ const makeGrid = () => {
 
   return squares;
 };
+
+document.onkeydown = checkKey;
+
+function checkKey(e) {
+  e = e || window.event;
+
+  if (e.keyCode == "38") {
+    if (hider.x > 0) {
+      hider.x -= 1;
+      document
+        .querySelectorAll(".enemy-square")
+        .forEach((square) => square.classList.remove("enemy-square"));
+      updatedHider = true;
+    }
+  } else if (e.keyCode == "40") {
+    if (hider.x < size - 1) {
+      hider.x += 1;
+      document
+        .querySelectorAll(".enemy-square")
+        .forEach((square) => square.classList.remove("enemy-square"));
+      updatedHider = true;
+    }
+  } else if (e.keyCode == "37") {
+    if (hider.y > 0) {
+      hider.y -= 1;
+      document
+        .querySelectorAll(".enemy-square")
+        .forEach((square) => square.classList.remove("enemy-square"));
+      updatedHider = true;
+    }
+  } else if (e.keyCode == "39") {
+    if (hider.y < size - 1) {
+      hider.y += 1;
+      document
+        .querySelectorAll(".enemy-square")
+        .forEach((square) => square.classList.remove("enemy-square"));
+      updatedHider = true;
+    }
+  }
+
+  document.querySelector(".user-square").classList.remove("user-square");
+}
 
 function getPath(pathDict, last, start) {
   let pos = last;

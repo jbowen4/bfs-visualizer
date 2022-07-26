@@ -1,5 +1,25 @@
 #grid {
+    display: flex;
+    flex-wrap: wrap;
+    width: 400px;
+    height: 400px;
+    background-color: blue;
+}
+
+#grid div {
     width: 40px;
-    height:40px;
-    background-color: #000;
+    height: 40px;
+    background-color: yellow;
+}
+
+.user-square {
+    background-color: green !important;
+}
+
+.enemy-square {
+    background-color: brown !important;
+}
+
+.path-square {
+    background-color:blueviolet !important;
 }
